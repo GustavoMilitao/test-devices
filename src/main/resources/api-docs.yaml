@@ -1,0 +1,122 @@
+openapi: 3.0.0
+info:
+  title: Devices API
+  description: API for managing devices
+  version: 1.0.0
+paths:
+  /devices:
+    get:
+      summary: Fetch all devices
+      responses:
+        '200':
+          description: A list of devices
+    post:
+      summary: Create a new device
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+      responses:
+        '201':
+          description: Device created
+  /devices/{id}:
+    get:
+      summary: Fetch a single device
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the device to fetch
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Device details
+        '404':
+          description: Device not found
+    put:
+      summary: Fully update an existing device
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the device to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+      responses:
+        '200':
+          description: Device updated
+        '404':
+          description: Device not found
+    patch:
+      summary: Partially update an existing device
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the device to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                brand:
+                  type: string
+                state:
+                  type: string
+                  enum: [available, in-use, inactive]
+      responses:
+        '200':
+          description: Device partially updated
+        '404':
+          description: Device not found
+    delete:
+      summary: Delete a single device
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the device to delete
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Device deleted
+        '404':
+          description: Device not found
+components:
+  schemas:
+    Device:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        brand:
+          type: string
+        state:
+          type: string
+          enum: [available, in-use, inactive]
+        creationTime:
+          type: string
+          format: date-time
+      required:
+        - name
+        - brand
+        - state
+        - creationTime
