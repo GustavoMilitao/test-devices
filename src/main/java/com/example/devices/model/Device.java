@@ -1,8 +1,6 @@
 package com.example.devices.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
@@ -10,17 +8,23 @@ import java.time.LocalDateTime;
 @Table(name = "devices")
 public class Device {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String brand;
-    private String state; // available, in-use, inactive
-    private final LocalDateTime creationTime;
+    @Enumerated(EnumType.STRING)
+    private DeviceState state;
+    private LocalDateTime creationTime;
 
-    public Device(Long id, String name, String brand, String state) {
-        this.id = id;
+    public Device(String name, String brand, DeviceState state) {
         this.name = name;
         this.brand = brand;
         this.state = state;
+        this.creationTime = LocalDateTime.now();
+    }
+
+    @PrePersist
+    protected void onCreate() {
         this.creationTime = LocalDateTime.now();
     }
 
@@ -30,10 +34,6 @@ public class Device {
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -52,11 +52,11 @@ public class Device {
         this.brand = brand;
     }
 
-    public String getState() {
+    public DeviceState getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(DeviceState state) {
         this.state = state;
     }
 

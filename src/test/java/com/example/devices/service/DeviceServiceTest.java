@@ -1,8 +1,11 @@
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.example.devices.dto.DeviceDto;
+import com.example.devices.dto.DeviceCreateDto;
+import com.example.devices.dto.DeviceResponseDto;
+import com.example.devices.dto.DeviceUpdateDto;
 import com.example.devices.model.Device;
+import com.example.devices.model.DeviceState;
 import com.example.devices.repository.DeviceRepository;
 import com.example.devices.service.DeviceService;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 class DeviceServiceTest {
@@ -31,17 +33,17 @@ class DeviceServiceTest {
         device.setId(1L);
         device.setName("Device1");
         device.setBrand("BrandA");
-        device.setState("available");
+        device.setState(DeviceState.AVAILABLE);
     }
 
     @Test
     void testCreateDevice() {
         when(deviceRepository.save(any(Device.class))).thenReturn(device);
-        DeviceDto deviceDto = new DeviceDto();
+        DeviceCreateDto deviceDto = new DeviceCreateDto();
         deviceDto.setName("Device1");
         deviceDto.setBrand("BrandA");
-        deviceDto.setState("available");
-        Device createdDevice = deviceService.createDevice(deviceDto);
+        deviceDto.setState(DeviceState.AVAILABLE);
+        DeviceResponseDto createdDevice = deviceService.createDevice(deviceDto);
         assertNotNull(createdDevice);
         assertEquals(device.getName(), createdDevice.getName());
     }
@@ -49,7 +51,7 @@ class DeviceServiceTest {
     @Test
     void testFetchDevice() {
         when(deviceRepository.findById(1L)).thenReturn(Optional.of(device));
-        Device fetchedDevice = deviceService.fetchDevice(1L);
+        DeviceResponseDto fetchedDevice = deviceService.fetchDevice(1L);
         assertNotNull(fetchedDevice);
         assertEquals(device.getId(), fetchedDevice.getId());
     }
@@ -59,11 +61,11 @@ class DeviceServiceTest {
         when(deviceRepository.findById(1L)).thenReturn(Optional.of(device));
         device.setName("UpdatedDevice");
         when(deviceRepository.save(any(Device.class))).thenReturn(device);
-        DeviceDto deviceDto = new DeviceDto();
+        DeviceUpdateDto deviceDto = new DeviceUpdateDto();
         deviceDto.setName("UpdatedDevice");
         deviceDto.setBrand("BrandA");
-        deviceDto.setState("available");
-        Device updatedDevice = deviceService.updateDevice(1L, deviceDto);
+        deviceDto.setState(DeviceState.AVAILABLE);
+        DeviceResponseDto updatedDevice = deviceService.updateDevice(1L, deviceDto);
         assertEquals("UpdatedDevice", updatedDevice.getName());
     }
 

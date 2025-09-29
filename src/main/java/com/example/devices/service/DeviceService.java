@@ -1,12 +1,15 @@
 package com.example.devices.service;
 
-import com.example.devices.dto.DeviceDto;
+import com.example.devices.dto.DeviceCreateDto;
+import com.example.devices.dto.DeviceResponseDto;
+import com.example.devices.dto.DeviceUpdateDto;
 import com.example.devices.model.Device;
+import com.example.devices.model.DeviceState;
 import com.example.devices.repository.DeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,46 +23,97 @@ public class DeviceService {
         this.deviceRepository = deviceRepository;
     }
 
-    public Device createDevice(DeviceDto deviceDto) {
+    public DeviceResponseDto createDevice(DeviceCreateDto deviceDto) {
         Device device = new Device();
         device.setName(deviceDto.getName());
         device.setBrand(deviceDto.getBrand());
-        device.setState("available");
-        return deviceRepository.save(device);
+        device.setState(deviceDto.getState());
+        Device response = deviceRepository.save(device);
+        DeviceResponseDto  deviceResponseDto = new DeviceResponseDto();
+        deviceResponseDto.setId(response.getId());
+        deviceResponseDto.setName(response.getName());
+        deviceResponseDto.setBrand(response.getBrand());
+        deviceResponseDto.setState(response.getState());
+        deviceResponseDto.setCreationTime(response.getCreationTime());
+        return deviceResponseDto;
     }
 
-    public Device updateDevice(Long id, DeviceDto deviceDto) {
+    public DeviceResponseDto updateDevice(Long id, DeviceUpdateDto deviceDto) {
         Optional<Device> optionalDevice = deviceRepository.findById(id);
         if (optionalDevice.isPresent()) {
             Device device = optionalDevice.get();
-            if (!device.getState().equals("in-use")) {
-                device.setBrand(deviceDto.getBrand());
-                device.setName(deviceDto.getName());
+            Optional.ofNullable(deviceDto.getState()).ifPresent(device::setState);
+            if (!device.getState().equals(DeviceState.IN_USE)) {
+                Optional.ofNullable(deviceDto.getBrand()).ifPresent(device::setBrand);
+                Optional.ofNullable(deviceDto.getName()).ifPresent(device::setName);
             }
-            return deviceRepository.save(device);
+            Device deviceToReturn = deviceRepository.save(device);
+
         }
         return null;
     }
 
-    public Device fetchDevice(Long id) {
-        return deviceRepository.findById(id).orElse(null);
+    public DeviceResponseDto fetchDevice(Long id) {
+        Device response = deviceRepository.findById(id).orElse(null);
+        if(response == null)
+            return null;
+        DeviceResponseDto deviceResponseDto = new DeviceResponseDto();
+        deviceResponseDto.setId(response.getId());
+        deviceResponseDto.setName(response.getName());
+        deviceResponseDto.setBrand(response.getBrand());
+        deviceResponseDto.setState(response.getState());
+        deviceResponseDto.setCreationTime(response.getCreationTime());
+        return deviceResponseDto;
     }
 
-    public List<Device> fetchAllDevices() {
-        return deviceRepository.findAll();
+    public List<DeviceResponseDto> fetchAllDevices() {
+        List<Device> list = deviceRepository.findAll();
+        List<DeviceResponseDto> deviceResponseDtoList = new ArrayList<>();
+        for (Device device : list) {
+            DeviceResponseDto deviceResponseDto = new DeviceResponseDto();
+            deviceResponseDto.setId(device.getId());
+            deviceResponseDto.setName(device.getName());
+            deviceResponseDto.setBrand(device.getBrand());
+            deviceResponseDto.setState(device.getState());
+            deviceResponseDto.setCreationTime(device.getCreationTime());
+            deviceResponseDtoList.add(deviceResponseDto);
+        }
+        return deviceResponseDtoList;
     }
 
-    public List<Device> fetchDevicesByBrand(String brand) {
-        return deviceRepository.findByBrand(brand);
+    public List<DeviceResponseDto> fetchDevicesByBrand(String brand) {
+        List<Device> list = deviceRepository.findByBrand(brand);
+        List<DeviceResponseDto> deviceResponseDtoList = new ArrayList<>();
+        for (Device device : list) {
+            DeviceResponseDto deviceResponseDto = new DeviceResponseDto();
+            deviceResponseDto.setId(device.getId());
+            deviceResponseDto.setName(device.getName());
+            deviceResponseDto.setBrand(device.getBrand());
+            deviceResponseDto.setState(device.getState());
+            deviceResponseDto.setCreationTime(device.getCreationTime());
+            deviceResponseDtoList.add(deviceResponseDto);
+        }
+        return deviceResponseDtoList;
     }
 
-    public List<Device> fetchDevicesByState(String state) {
-        return deviceRepository.findByState(state);
+    public List<DeviceResponseDto> fetchDevicesByState(DeviceState state) {
+        List<Device> list = deviceRepository.findByState(state);
+        List<DeviceResponseDto> deviceResponseDtoList = new ArrayList<>();
+        for (Device device : list) {
+            DeviceResponseDto deviceResponseDto = new DeviceResponseDto();
+            deviceResponseDto.setId(device.getId());
+            deviceResponseDto.setName(device.getName());
+            deviceResponseDto.setBrand(device.getBrand());
+            deviceResponseDto.setState(device.getState());
+            deviceResponseDto.setCreationTime(device.getCreationTime());
+            deviceResponseDtoList.add(deviceResponseDto);
+        }
+        return deviceResponseDtoList;
     }
 
     public boolean deleteDevice(Long id) {
         Optional<Device> optionalDevice = deviceRepository.findById(id);
-        if (optionalDevice.isPresent() && !optionalDevice.get().getState().equals("in-use")) {
+        if (optionalDevice.isPresent() && !optionalDevice.get().getState().equals(DeviceState.IN_USE)) {
             deviceRepository.delete(optionalDevice.get());
             return true;
         }

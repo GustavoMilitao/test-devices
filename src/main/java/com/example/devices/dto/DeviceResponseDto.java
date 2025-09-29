@@ -1,18 +1,20 @@
 package com.example.devices.dto;
 
+import com.example.devices.model.DeviceState;
+
 import java.time.LocalDateTime;
 
-public class DeviceDto {
+public class DeviceResponseDto {
     private Long id;
     private String name;
     private String brand;
-    private String state;
+    private DeviceState state;
     private LocalDateTime creationTime;
 
-    public DeviceDto() {
+    public DeviceResponseDto() {
     }
 
-    public DeviceDto(Long id, String name, String brand, String state, LocalDateTime creationTime) {
+    public DeviceResponseDto(Long id, String name, String brand, DeviceState state, LocalDateTime creationTime) {
         this.id = id;
         this.name = name;
         this.brand = brand;
@@ -44,11 +46,11 @@ public class DeviceDto {
         this.brand = brand;
     }
 
-    public String getState() {
+    public DeviceState getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(DeviceState state) {
         this.state = state;
     }
 

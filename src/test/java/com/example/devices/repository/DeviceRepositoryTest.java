@@ -2,6 +2,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.example.devices.model.Device;
+import com.example.devices.model.DeviceState;
 import com.example.devices.repository.DeviceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,7 @@ public class DeviceRepositoryTest {
         device.setId(1L);
         device.setName("Device1");
         device.setBrand("BrandA");
-        device.setState("available");
+        device.setState(DeviceState.AVAILABLE);
     }
 
     @Test

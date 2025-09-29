@@ -3,8 +3,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.example.devices.controller.DeviceController;
-import com.example.devices.dto.DeviceDto;
+import com.example.devices.dto.DeviceCreateDto;
+import com.example.devices.dto.DeviceResponseDto;
+import com.example.devices.dto.DeviceUpdateDto;
 import com.example.devices.model.Device;
+import com.example.devices.model.DeviceState;
 import com.example.devices.service.DeviceService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,8 +46,8 @@ public class DeviceControllerTest {
 
     @Test
     public void testCreateDevice() throws Exception {
-        Device device = new Device(1L, "Device1", "BrandA", "available");
-        when(deviceService.createDevice(any(DeviceDto.class))).thenReturn(device);
+        DeviceResponseDto device = new DeviceResponseDto(1L, "Device1", "BrandA", DeviceState.AVAILABLE, LocalDateTime.now());
+        when(deviceService.createDevice(any(DeviceCreateDto.class))).thenReturn(device);
 
         mockMvc.perform(post("/devices")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -55,7 +58,7 @@ public class DeviceControllerTest {
 
     @Test
     public void testGetDevice() throws Exception {
-        Device device = new Device(1L, "Device1", "BrandA", "available");
+        DeviceResponseDto device = new DeviceResponseDto(1L, "Device1", "BrandA", DeviceState.AVAILABLE, LocalDateTime.now());
         when(deviceService.fetchDevice(1L)).thenReturn(device);
 
         mockMvc.perform(get("/devices/1"))
@@ -65,9 +68,9 @@ public class DeviceControllerTest {
 
     @Test
     public void testGetAllDevices() throws Exception {
-        Device device1 = new Device(1L, "Device1", "BrandA", "available");
-        Device device2 = new Device(2L, "Device2", "BrandB", "in-use");
-        List<Device> devices = Arrays.asList(device1, device2);
+        DeviceResponseDto device1 = new DeviceResponseDto(1L, "Device1", "BrandA", DeviceState.AVAILABLE, LocalDateTime.now());
+        DeviceResponseDto device2 = new DeviceResponseDto(2L, "Device2", "BrandB", DeviceState.IN_USE,  LocalDateTime.now());
+        List<DeviceResponseDto> devices = Arrays.asList(device1, device2);
         when(deviceService.fetchAllDevices()).thenReturn(devices);
 
         mockMvc.perform(get("/devices"))
@@ -77,8 +80,8 @@ public class DeviceControllerTest {
 
     @Test
     public void testUpdateDevice() throws Exception {
-        Device device = new Device(1L, "Device1", "BrandA", "available");
-        when(deviceService.updateDevice(eq(1L), any(DeviceDto.class))).thenReturn(device);
+        DeviceResponseDto device = new DeviceResponseDto(1L, "Device1", "BrandA", DeviceState.AVAILABLE, LocalDateTime.now());
+        when(deviceService.updateDevice(eq(1L), any(DeviceUpdateDto.class))).thenReturn(device);
 
         mockMvc.perform(put("/devices/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -97,9 +100,9 @@ public class DeviceControllerTest {
 
     @Test
     public void testGetDevicesByBrand() throws Exception {
-        Device device1 = new Device(1L, "Device1", "BrandA", "available");
-        Device device2 = new Device(2L, "Device2", "BrandA", "in-use");
-        List<Device> devices = Arrays.asList(device1, device2);
+        DeviceResponseDto device1 = new DeviceResponseDto(1L, "Device1", "BrandA", DeviceState.AVAILABLE, LocalDateTime.now());
+        DeviceResponseDto device2 = new DeviceResponseDto(2L, "Device2", "BrandA", DeviceState.IN_USE, LocalDateTime.now());
+        List<DeviceResponseDto> devices = Arrays.asList(device1, device2);
         when(deviceService.fetchDevicesByBrand("BrandA")).thenReturn(devices);
 
         mockMvc.perform(get("/devices/brand/BrandA"))
@@ -109,9 +112,9 @@ public class DeviceControllerTest {
 
     @Test
     public void testGetDevicesByState() throws Exception {
-        Device device1 = new Device(1L, "Device1", "BrandA", "available");
-        List<Device> devices = Arrays.asList(device1);
-        when(deviceService.fetchDevicesByState("available")).thenReturn(devices);
+        DeviceResponseDto device1 = new DeviceResponseDto(1L, "Device1", "BrandA", DeviceState.AVAILABLE,  LocalDateTime.now());
+        List<DeviceResponseDto> devices = Arrays.asList(device1);
+        when(deviceService.fetchDevicesByState(DeviceState.AVAILABLE)).thenReturn(devices);
 
         mockMvc.perform(get("/devices/state/available"))
                 .andExpect(status().isOk())
