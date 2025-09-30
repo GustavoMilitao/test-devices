@@ -18,8 +18,12 @@ import java.util.List;
 @RequestMapping("/api/devices")
 public class DeviceController {
 
+    private final DeviceService deviceService;
+
     @Autowired
-    private DeviceService deviceService;
+    public DeviceController(DeviceService deviceService) {
+        this.deviceService = deviceService;
+    }
 
     @PostMapping
     public ResponseEntity<DeviceResponseDto> createDevice(@RequestBody DeviceCreateDto deviceDto) {

@@ -48,7 +48,13 @@ public class DeviceService {
                 Optional.ofNullable(deviceDto.getName()).ifPresent(device::setName);
             }
             Device deviceToReturn = deviceRepository.save(device);
-
+            DeviceResponseDto deviceResponseDto = new DeviceResponseDto();
+            deviceResponseDto.setId(deviceToReturn.getId());
+            deviceResponseDto.setName(deviceToReturn.getName());
+            deviceResponseDto.setBrand(deviceToReturn.getBrand());
+            deviceResponseDto.setState(deviceToReturn.getState());
+            deviceResponseDto.setCreationTime(deviceToReturn.getCreationTime());
+            return deviceResponseDto;
         }
         return null;
     }

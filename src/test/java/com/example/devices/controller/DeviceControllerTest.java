@@ -10,6 +10,7 @@ import com.example.devices.model.Device;
 import com.example.devices.model.DeviceState;
 import com.example.devices.service.DeviceService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -42,6 +43,7 @@ public class DeviceControllerTest {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(deviceController).build();
         objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
     }
 
     @Test
@@ -49,7 +51,7 @@ public class DeviceControllerTest {
         DeviceResponseDto device = new DeviceResponseDto(1L, "Device1", "BrandA", DeviceState.AVAILABLE, LocalDateTime.now());
         when(deviceService.createDevice(any(DeviceCreateDto.class))).thenReturn(device);
 
-        mockMvc.perform(post("/devices")
+        mockMvc.perform(post("/api/devices")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(device)))
                 .andExpect(status().isCreated())
@@ -61,7 +63,7 @@ public class DeviceControllerTest {
         DeviceResponseDto device = new DeviceResponseDto(1L, "Device1", "BrandA", DeviceState.AVAILABLE, LocalDateTime.now());
         when(deviceService.fetchDevice(1L)).thenReturn(device);
 
-        mockMvc.perform(get("/devices/1"))
+        mockMvc.perform(get("/api/devices/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Device1"));
     }
@@ -73,7 +75,7 @@ public class DeviceControllerTest {
         List<DeviceResponseDto> devices = Arrays.asList(device1, device2);
         when(deviceService.fetchAllDevices()).thenReturn(devices);
 
-        mockMvc.perform(get("/devices"))
+        mockMvc.perform(get("/api/devices"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
     }
@@ -83,7 +85,7 @@ public class DeviceControllerTest {
         DeviceResponseDto device = new DeviceResponseDto(1L, "Device1", "BrandA", DeviceState.AVAILABLE, LocalDateTime.now());
         when(deviceService.updateDevice(eq(1L), any(DeviceUpdateDto.class))).thenReturn(device);
 
-        mockMvc.perform(put("/devices/1")
+        mockMvc.perform(put("/api/devices/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(device)))
                 .andExpect(status().isOk())
@@ -92,9 +94,9 @@ public class DeviceControllerTest {
 
     @Test
     public void testDeleteDevice() throws Exception {
-        doNothing().when(deviceService).deleteDevice(1L);
+        when(deviceService.deleteDevice(1L)).thenReturn(true);
 
-        mockMvc.perform(delete("/devices/1"))
+        mockMvc.perform(delete("/api/devices/1"))
                 .andExpect(status().isNoContent());
     }
 
@@ -105,7 +107,7 @@ public class DeviceControllerTest {
         List<DeviceResponseDto> devices = Arrays.asList(device1, device2);
         when(deviceService.fetchDevicesByBrand("BrandA")).thenReturn(devices);
 
-        mockMvc.perform(get("/devices/brand/BrandA"))
+        mockMvc.perform(get("/api/devices/brand/BrandA"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
     }
@@ -116,7 +118,7 @@ public class DeviceControllerTest {
         List<DeviceResponseDto> devices = Arrays.asList(device1);
         when(deviceService.fetchDevicesByState(DeviceState.AVAILABLE)).thenReturn(devices);
 
-        mockMvc.perform(get("/devices/state/available"))
+        mockMvc.perform(get("/api/devices/state/available"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1));
     }
