@@ -39,6 +39,8 @@ The Device entity includes the following properties:
    mvn clean install
    ```
 4. Run the application:
+   > **Note:** You must have a MySQL server running and accessible as configured in `src/main/resources/application.properties` (see the `spring.datasource.*` properties) before running the application. You can use Docker Compose as described below.
+
    ```
    mvn spring-boot:run
    ```
@@ -53,13 +55,40 @@ mvn test
 ```
 
 ## Docker
-To build the Docker image, run:
+#### Before you can start
+
+If you have previously run a MySQL container named `mysql-db`, you may see an error like:
+
+```
+Error response from daemon: Conflict. The container name "/mysql-db" is already in use by container ...
+```
+
+To resolve this, remove the existing container before running Docker Compose:
+
+```
+docker rm -f mysql-db
+```
+
+> **Note:** The API requires a running MySQL server, configured as in `src/main/resources/application.properties`.
+
+### Option 1: Run everything with Docker Compose (recommended)
+
+If you don't have Docker Compose, install it: https://docs.docker.com/compose/install/
+
+Then, simply run:
+```
+docker compose up --build
+```
+This will start both the MySQL database and the API, with the correct dependencies and environment variables.
+
+### Option 2: Use your own MySQL instance
+
+You can run MySQL in any way you prefer. For a quick start with Docker, see the official MySQL Docker documentation: https://hub.docker.com/_/mysql
+
+After your MySQL server is running and accessible, build and run the API:
 ```
 docker build -t devices-api .
-```
-To run the Docker container:
-```
-docker run -p 8080:8080 devices-api
+docker run --name devices-api -p 8080:8080 devices-api
 ```
 
 ## Contribution
