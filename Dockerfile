@@ -11,8 +11,8 @@ COPY src ./src
 
 RUN mvn clean package -DskipTests
 
-FROM openjdk:21-jre-slim
+FROM openjdk:21-slim
 WORKDIR /app
-COPY --from=build /app/target/devices-api-0.0.1-SNAPSHOT.jar devices-api.jar
+COPY --from=build /app/target/devices-api-1.0-SNAPSHOT.jar devices-api.jar
 
 ENTRYPOINT ["java", "-jar", "devices-api.jar"]
